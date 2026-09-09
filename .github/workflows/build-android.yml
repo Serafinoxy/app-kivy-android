@@ -18,17 +18,30 @@ jobs:
       - name: Scarica il codice del repository
         uses: actions/checkout@v4
 
-      - name: Compila con Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Imposta Python
+        uses: actions/setup-python@v5
         with:
-          # Cartella dove si trova il file buildozer.spec.
-          # "." significa "nella radice del repository".
-          workdir: .
-          buildozer_version: stable
+          python-version: "3.11"
+
+      - name: Installa le dipendenze di sistema necessarie
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk python3-pip autoconf libtool \
+            pkg-config zlib1g-dev libncurses-dev libncursesw5-dev cmake \
+            libffi-dev libssl-dev automake build-essential ccache
+
+      - name: Installa Buildozer e Cython
+        run: |
+          pip3 install --upgrade Cython==0.29.33 buildozer
+
+      - name: Compila l'APK
+        run: |
+          export PATH=$PATH:~/.local/bin/
+          yes | buildozer -v android debug
 
       - name: Carica l'APK come risultato scaricabile
         uses: actions/upload-artifact@v4
         with:
           name: apk-compilato
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
