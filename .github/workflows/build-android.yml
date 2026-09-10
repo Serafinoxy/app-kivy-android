@@ -1,47 +1,24 @@
-name: Build APK Android
+name: Compile Kivy Android
 
-# Fa partire la compilazione ogni volta che carichi (push) codice sul
-# ramo "main", oppure manualmente dal pulsante "Run workflow" nella
-# scheda Actions di GitHub.
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
-  build-android:
-    name: Compila APK con Buildozer
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Scarica il codice del repository
+      - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Imposta Python
-        uses: actions/setup-python@v5
+      - name: Compilazione con Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          python-version: "3.11"
+          command: buildozer -v android debug
 
-      - name: Installa le dipendenze di sistema necessarie
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk python3-pip autoconf libtool \
-            libltdl-dev pkg-config zlib1g-dev libncurses-dev libncursesw5-dev \
-            cmake libffi-dev libssl-dev automake build-essential ccache
-
-      - name: Installa Buildozer e Cython
-        run: |
-          pip3 install --upgrade Cython==0.29.33 buildozer
-
-      - name: Compila l'APK
-        run: |
-          export PATH=$PATH:~/.local/bin/
-          yes | buildozer -v android debug
-
-      - name: Carica l'APK come risultato scaricabile
+      - name: Carica APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk-compilato
-          path: bin/*.apk
+          name: kivy-apk
+          path: ${{ steps.buildozer.outputs.filename }}
