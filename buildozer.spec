@@ -1,16 +1,25 @@
-[app]
-title = HelloKivy
-package.name = hellokivy
-package.domain = org.example
+name: Compile Kivy Android
 
-# Aggiungi questa riga:
-source.dir = .
+on:
+  push:
+    branches: [ main ]
 
-source.include_exts = py,png,jpg,kv,atlas
-version = 0.1
-requirements = python3,kivy
-orientation = portrait
-fullscreen = 0
-android.api = 33
-android.minapi = 21
-android.accept_sdk_license = True
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Compilazione con Buildozer via Docker
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/home/user/hostcwd \
+            kivy/buildozer:latest \
+            android debug
+
+      - name: Carica APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kivy-apk
+          path: bin/*.apk
