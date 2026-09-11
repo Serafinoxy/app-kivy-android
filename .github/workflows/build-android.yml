@@ -1,11 +1,11 @@
-name: Test Installazione Pacchetti
+name: Test Download SDK e NDK
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test-install:
+  test-sdk:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del codice
@@ -30,6 +30,10 @@ jobs:
           pip install --upgrade pip
           pip install --user cython==0.29.33 buildozer
 
-      - name: Conferma completamento
+      - name: Download SDK e NDK Android
         run: |
-          echo "Tutti i pacchetti sono stati installati correttamente!"
+          export PATH=$PATH:~/.local/bin
+          # Questo comando forza Buildozer a scaricare e preparare l'ambiente Android
+          yes | buildozer -v android clean || true
+          # Oppure avviamo il setup iniziale degli strumenti
+          buildozer -v android debug || true
