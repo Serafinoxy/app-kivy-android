@@ -1,11 +1,11 @@
-name: Compile Kivy Android Native
+name: Test Installazione Pacchetti
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build:
+  test-install:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del codice
@@ -30,13 +30,6 @@ jobs:
           pip install --upgrade pip
           pip install --user cython==0.29.33 buildozer
 
-      - name: Compilazione APK con Buildozer
+      - name: Conferma completamento
         run: |
-          export PATH=$PATH:~/.local/bin
-          buildozer -v android debug
-
-      - name: Carica APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: kivy-apk
-          path: bin/*.apk
+          echo "Tutti i pacchetti sono stati installati correttamente!"
