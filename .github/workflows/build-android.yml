@@ -1,11 +1,11 @@
-name: Test Environment & Packages
+name: Test and Compile Kivy Android APK
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test-env:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del codice
@@ -34,3 +34,8 @@ jobs:
           python3 --version
           cython --version
           buildozer --version
+
+      - name: Compilazione con Buildozer
+        run: |
+          export PATH=$PATH:~/.local/bin
+          buildozer -v android debug
