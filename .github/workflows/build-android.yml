@@ -1,11 +1,11 @@
-name: Test Download SDK e NDK
+name: Test Environment & Packages
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test-sdk:
+  test-env:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del codice
@@ -25,15 +25,12 @@ jobs:
             libncurses5-dev libncursesw5-dev \
             libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 
-      - name: Installazione Buildozer e Cython
+      - name: Installazione e verifica pacchetti
         run: |
           pip install --upgrade pip
           pip install --user cython==0.29.33 buildozer
-
-      - name: Download SDK e NDK Android
-        run: |
           export PATH=$PATH:~/.local/bin
-          # Questo comando forza Buildozer a scaricare e preparare l'ambiente Android
-          yes | buildozer -v android clean || true
-          # Oppure avviamo il setup iniziale degli strumenti
-          buildozer -v android debug || true
+          echo "--- VERIFICA CORRETTA INSTALLAZIONE ---"
+          python3 --version
+          cython --version
+          buildozer --version
